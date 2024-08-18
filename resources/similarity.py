@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
-import pickle
 import sqlite3
 
 try:
@@ -35,7 +34,6 @@ def calculate_mean_similarity(df_input_measurements, df_comparison_data, similar
         list: List of IDs for the most similar images.
     """
     input_ids = df_input_measurements["ID"].values
-    comparison_ids = df_comparison_data["ID"].values
 
     input_histogram_column = df_input_measurements.drop(columns=["ID"]).columns[0]
     comparison_histogram_column = df_comparison_data.drop(columns=["ID"]).columns[0]
