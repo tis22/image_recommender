@@ -15,6 +15,7 @@ try:
 except ImportError:
     pass
 
+
 def print_images(input_images, result_paths, similarities, best_n):
     """
     Plots input images and their most similar results.
@@ -49,6 +50,7 @@ def print_images(input_images, result_paths, similarities, best_n):
         axes[i].axis("off")
     plt.show()
 
+
 def plot_selected_images(id_list):
     """
     Plots images based on a list of IDs.
@@ -70,6 +72,7 @@ def plot_selected_images(id_list):
             axes[i].set_title(f"ID: {id_list[i]}")
         axes[i].axis("off")
     plt.show()
+
 
 def plot_dimensionality_reduction(algorithm_data, labels=None, output_file=None):
     """

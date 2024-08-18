@@ -5,6 +5,7 @@ from torchvision import models, transforms
 from PIL import Image, ExifTags
 import os
 
+
 def image_rgb_calculation(image):
     """
     Calculates the RGB histogram for an image.
@@ -19,6 +20,7 @@ def image_rgb_calculation(image):
     hist = cv2.calcHist([rgb_image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
     hist = cv2.normalize(hist, hist).flatten()
     return hist
+
 
 def image_hsv_calculation(image):
     """
@@ -35,20 +37,31 @@ def image_hsv_calculation(image):
     hist = cv2.normalize(hist, hist).flatten()
     return hist
 
+
 def load_embedding_model():
     """
     Loads the EfficientNet model for embedding calculations.
+
+    This function loads a pre-trained EfficientNet model and prepares it for 
+    embedding calculations by removing the final classification layer. It also 
+    sets up a preprocessing pipeline to prepare images for input to the model.
+
+    Returns:
+        None
     """
     global model, preprocess
     model = models.efficientnet_v2_s(weights=models.EfficientNet_V2_S_Weights.DEFAULT)
     model = torch.nn.Sequential(*list(model.children())[:-1])
     model.eval()
-    preprocess = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
+    preprocess = transforms.Compose(
+        [
+            transforms.ToPILImage(),
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
 
 def model_embeddings_calculation(image):
     """
@@ -65,6 +78,7 @@ def model_embeddings_calculation(image):
     with torch.no_grad():
         features = model(input_batch)
     return features.numpy().flatten()
+
 
 def extract_image_details(image_id, path, resize_size):
     """

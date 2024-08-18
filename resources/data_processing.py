@@ -35,6 +35,7 @@ def find_image_files(root_dir, extensions=(".jpg", ".jpeg", ".png", ".bmp", ".ti
                 image_files.append(os.path.join(subdir, file))
     return image_files
 
+
 def load_checkpoint():
     """
     Loads the checkpoint from a pickle file, if it exists.
@@ -56,6 +57,7 @@ def load_checkpoint():
         print(f"Loaded checkpoint.\nStarting from path with ID: {batch_index + 1}")
     return batch_index, paths, rgb_hists, hsv_hists, embeddings, other_data
 
+
 def save_checkpoint(batch_index, paths, rgb_hists, hsv_hists, embeddings, other_data):
     """
     Saves the current progress into a checkpoint pickle file.
@@ -73,6 +75,7 @@ def save_checkpoint(batch_index, paths, rgb_hists, hsv_hists, embeddings, other_
     """
     with open("checkpoint.pkl", "wb") as f:
         pickle.dump((batch_index, paths, rgb_hists, hsv_hists, embeddings, other_data), f)
+
 
 def load_pickles():
     """
@@ -93,6 +96,7 @@ def load_pickles():
     other_data_df = pd.read_pickle("Other_data.pkl")
 
     return rgb_df, hsv_df, embedding_df, path_df, other_data_df
+
 
 def image_batch_generator(image_files, batch_size, resize_size, start_index=0, show_progress=True):
     """
@@ -133,6 +137,7 @@ def image_batch_generator(image_files, batch_size, resize_size, start_index=0, s
     if show_progress:
         progress_bar.close()
 
+
 def main_load_images(batch_size, desired_size):
     """
     Main function to load images, calculate features, and save them.
@@ -146,7 +151,7 @@ def main_load_images(batch_size, desired_size):
     """
     start_index, paths, rgb_hists, hsv_hists, embeddings, other_data = load_checkpoint()
 
-    image_paths = find_image_files(PATH_TO_IMAGES)  
+    image_paths = find_image_files(PATH_TO_IMAGES)
     load_embedding_model()
 
     for df, batch_index in image_batch_generator(

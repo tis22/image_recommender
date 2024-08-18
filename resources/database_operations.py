@@ -1,11 +1,12 @@
 import sqlite3
 import os
 
+
 def create_database():
     """
     Creates a SQLite database and an image_paths table if they do not exist.
 
-    This function checks if the "database" directory exists, creates it if it doesn't, 
+    This function checks if the "database" directory exists, creates it if it doesn't,
     and then creates a SQLite database and a table named "image_paths" to store image paths.
 
     Returns:
@@ -24,6 +25,7 @@ def create_database():
     )
     conn.commit()
 
+
 def save_to_db(df, conn):
     """
     Saves image paths from a DataFrame into the database.
@@ -39,6 +41,7 @@ def save_to_db(df, conn):
     for file_path in df["Path"]:
         curs.execute("""INSERT OR IGNORE INTO image_paths (Path) VALUES (?);""", (file_path,))
     conn.commit()
+
 
 def get_result_paths(curs, similarity_results):
     """

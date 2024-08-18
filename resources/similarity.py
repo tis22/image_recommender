@@ -21,8 +21,6 @@ except ImportError:
     pass
 
 
-
-
 def calculate_mean_similarity(df_input_measurements, df_comparison_data, similarity_function, best_n):
     """
     Calculates the mean similarity between input and comparison images.
@@ -60,6 +58,7 @@ def calculate_mean_similarity(df_input_measurements, df_comparison_data, similar
     best_ids = sorted_results.head(best_n)["ID"].tolist()
     return best_ids
 
+
 def find_similar_ids(measurement, similarity, df_input, best_n):
     """
     Finds the IDs of images that are most similar to the input image.
@@ -74,7 +73,7 @@ def find_similar_ids(measurement, similarity, df_input, best_n):
         list: List of IDs for the most similar images.
     """
     rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
-    
+
     similarity_functions = {"euclidean": "euclidean", "manhattan": "cityblock", "cosine": "cosine"}
 
     histogram_columns = {"RGB": "RGB_Histogram", "HSV": "HSV_Histogram", "Embedding": "Model_Embedding"}
@@ -96,18 +95,17 @@ def find_similar_ids(measurement, similarity, df_input, best_n):
 
 # Required because removing entries with 'none' (during extraction) sometimes causes IDs to be missing
 def correct_data():
-
     """
     Corrects mismatched IDs in the dataframes and saves the corrected data.
 
     This function ensures that the IDs in the dataframes are sequential and consistent.
-    It checks for mismatches and corrects them, then saves the corrected data back to 
+    It checks for mismatches and corrects them, then saves the corrected data back to
     the pickle files.
 
     Returns:
         None
     """
-        
+
     rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 
     dataframes = [
@@ -148,8 +146,8 @@ def correct_data():
             print(f"No mismatch found in {filename}. Skipping remaining files.")
             break
 
-def main_finding_similarities(input_images_number, measurement, similarity, best_n):
 
+def main_finding_similarities(input_images_number, measurement, similarity, best_n):
     """
     Main function to find and display the most similar images based on input criteria.
 

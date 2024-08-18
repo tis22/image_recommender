@@ -4,6 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import umap
 
+
 def reduce_dimensionality(df_to_reduce, algorithm, dimensions=2):
     """
     Reduces the dimensionality of the data using the specified algorithm.
@@ -27,6 +28,7 @@ def reduce_dimensionality(df_to_reduce, algorithm, dimensions=2):
         reduced_data = pca.fit_transform(df_to_reduce)
     return reduced_data
 
+
 def save_dimensionality_results(df, algorithm_name):
     """
     Saves the dimensionality reduction results to a .npy file.
@@ -36,6 +38,7 @@ def save_dimensionality_results(df, algorithm_name):
         algorithm_name (str): Name of the algorithm used.
     """
     np.save(f"{algorithm_name}_results.npy", df)
+
 
 def create_clusters(df_to_reduce, cluster_amount=100):
     """
