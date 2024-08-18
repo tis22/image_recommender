@@ -23,11 +23,8 @@ except ImportError:
 def initialize_data():
     """
     This function is used to set the global variables in this file.
- 
-    Args:
-        loaded_path_df (pd.DataFrame): The loaded path_df DataFrame.
-        loaded_rgb_df (pd.DataFrame): The loaded rgb_df DataFrame.
     """
+    
     global rgb_df, hsv_df, embedding_df, path_df, other_data_df
     rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 
@@ -83,6 +80,7 @@ def find_similar_ids(measurement, similarity, df_input, best_n):
     Returns:
         list: List of IDs for the most similar images.
     """
+    
     global rgb_df, hsv_df, embedding_df, path_df, other_data_df
 
     similarity_functions = {"euclidean": "euclidean", "manhattan": "cityblock", "cosine": "cosine"}
@@ -159,7 +157,6 @@ def correct_data():
 
 
 def main_finding_similarities(input_images_number, measurement, similarity, best_n):
-    global rgb_df, hsv_df, embedding_df, path_df, other_data_df
     """
     Main function to find and display the most similar images based on input criteria.
 
@@ -172,7 +169,8 @@ def main_finding_similarities(input_images_number, measurement, similarity, best
     Returns:
         None
     """
-
+    
+    global rgb_df, hsv_df, embedding_df, path_df, other_data_df
 
     specific_image_path = [r"C:\Users\timsa\Desktop\sample_pictures\testing\test_image_1.jpg"]
 
