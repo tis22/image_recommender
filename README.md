@@ -16,7 +16,7 @@ git clone https://github.com/yourusername/image-recommender.git
 
 Navigate into the Project Directory and install the dependencies.
 
-The requirements.txt contains all necessary dependencies, which are:
+The necessary dependencies are:
 
 numpy==1.24.3
 pandas==2.0.3
