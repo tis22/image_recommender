@@ -34,11 +34,6 @@ plotly==5.15.0
 pytest==8.3.2
 
 
-### Install the dependencies using pip:
-
-```bash
-pip install -r requirements.txt
-```
 
 ### Setting Up the Dataset
 Before you can start recommending images, you'll need to set up your dataset with all the necessary similarities and metadata.
