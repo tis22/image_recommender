@@ -1,6 +1,6 @@
 # Image Recommender
 ## Overview
-This project is designed to help you find the top five images similar to a given image from a large dataset of nearly 500,000 images. By leveraging Python, this software can recommend images based on various similarity metrics, such as color histograms and embeddings. The project focuses on image processing, feature extraction, similarity calculation, and clustering.
+This project is designed to help you find the top five images similar to a given image from a large dataset of nearly 450,000 images. By leveraging Python, this software can recommend images based on various similarity metrics, such as color histograms and embeddings. The project focuses on image processing, feature extraction, similarity calculation, and clustering.
 
 ## Getting Started
 Prerequisites
@@ -63,11 +63,14 @@ rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 ```
 
 ### Find Similar Images
-To find the top 5 similar images based on RGB histograms and Euclidean distance, use the following command:
+To find a specified number of similar images based on your chosen feature type and distance metric, use the following command:
 
 ```python
 main_finding_similarities(1, "RGB", "euclidean", 5)
-This function will compute the similarities between your input image and the dataset, displaying the top 5 similar images.
+This function will compute the similarities between your input images and the dataset, displaying the top n similar images. 
+You can specify the number of input images, choose between 'RGB', 'HSV' or 'Embedding' as the feature type
+and select 'euclidean', 'manhattan' or 'cosine' as the distance metric.
+Important: You need to specify the paths to your input images before running the function.
 ```
 
 ### Correct Data Inconsistencies
