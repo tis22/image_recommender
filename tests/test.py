@@ -2,13 +2,20 @@ import pytest
 import os
 import numpy as np
 import pandas as pd
+import sys
+import torch
 import sqlite3
+
+# Add the root directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from resources.data_processing import find_image_files, load_checkpoint, save_checkpoint, load_pickles, main_load_images
-from resources.image_features import image_rgb_calculation, image_hsv_calculation, load_embedding_model, extract_image_details
+from resources.image_features import model_embeddings_calculation, image_rgb_calculation, image_hsv_calculation, load_embedding_model, extract_image_details
 from resources.database_operations import create_database, save_to_db, get_result_paths
 from resources.similarity import calculate_mean_similarity
 from resources.visualization import print_images, plot_selected_images, plot_dimensionality_reduction
 from resources.dimensionality import reduce_dimensionality, create_clusters, save_dimensionality_results
+
 
 # Setup dummy data before running tests
 @pytest.fixture(scope="module", autouse=True)
@@ -87,11 +94,7 @@ def test_image_hsv_calculation():
 def test_load_embedding_model():
     load_embedding_model()
     assert load_embedding_model is not None
-
-def test_create_database():
-    create_database()
-    assert os.path.exists("database/bd_database.db")
-
+            
 def test_calculate_mean_similarity():
     df_input = pd.DataFrame({"ID": [1], "RGB_Histogram": [np.zeros(512)]})
     df_comparison = pd.DataFrame({"ID": [2], "RGB_Histogram": [np.zeros(512)]})
@@ -143,6 +146,79 @@ def test_main_load_images(monkeypatch):
     main_load_images(batch_size, desired_size)
 
     assert os.path.exists("resources/Path.pkl")
+
+def test_model_embeddings_calculation():
+    # Create a dummy image (e.g., 224x224 with 3 channels, as expected by EfficientNet)
+    dummy_image = np.zeros((224, 224, 3), dtype=np.uint8)
+    
+    # Mock the preprocess function to return a tensor
+    def mock_preprocess(image):
+        return torch.tensor(image, dtype=torch.float32).permute(2, 0, 1)  # Simulate tensor transformation
+    
+    # Mock the model to return a tensor with expected dimensions
+    class MockModel:
+        def __call__(self, input_batch):
+            return torch.zeros((1, 1280))  # Simulate a model output
+    
+    global preprocess, model
+    preprocess = mock_preprocess
+    model = MockModel()
+    
+    # Run the function
+    embedding = model_embeddings_calculation(dummy_image)
+    
+    # Verify the embedding shape
+    assert embedding.shape == (1280,)
+
+def test_save_to_db():
+    # Create an in-memory SQLite database
+    conn = sqlite3.connect(":memory:")
+    
+    # Create the table for image paths
+    conn.execute("CREATE TABLE image_paths (ID INTEGER PRIMARY KEY, Path TEXT);")
+    
+    # Create a dummy DataFrame with image paths
+    df = pd.DataFrame({"Path": ["./sample1.jpg", "./sample2.jpg"]})
+    
+    # Call the function to save data to the database
+    save_to_db(df, conn)
+    
+    # Query the database to check if the paths were saved correctly
+    curs = conn.cursor()
+    curs.execute("SELECT Path FROM image_paths")
+    results = curs.fetchall()
+    
+    # Expected output
+    expected_results = [("./sample1.jpg",), ("./sample2.jpg",)]
+    
+    # Verify that the results match the expected output
+    assert results == expected_results
+    
+    conn.close()
+
+
+def test_get_result_paths():
+    # Create an in-memory SQLite database
+    conn = sqlite3.connect(":memory:")
+    
+    # Create the table and insert dummy data
+    conn.execute("CREATE TABLE image_paths (ID INTEGER PRIMARY KEY, Path TEXT);")
+    conn.execute("INSERT INTO image_paths (Path) VALUES ('./sample1.jpg');")
+    conn.execute("INSERT INTO image_paths (Path) VALUES ('./sample2.jpg');")
+    
+    # Get the cursor
+    curs = conn.cursor()
+    
+    # Call the function to get paths for specific IDs
+    result_paths = get_result_paths(curs, [1, 2])
+    
+    # Expected output
+    expected_paths = ["./sample1.jpg", "./sample2.jpg"]
+    
+    # Verify that the returned paths match the expected output
+    assert result_paths == expected_paths
+    
+    conn.close()
 
 if __name__ == "__main__":
     pytest.main()

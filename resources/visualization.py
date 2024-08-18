@@ -4,11 +4,29 @@ import numpy as np
 import plotly.express as px
 import sqlite3
 import pandas as pd
-from .database_operations import get_result_paths
+
+try:
+    from database_operations import get_result_paths
+except ModuleNotFoundError:
+    pass
+
+try:
+    from .database_operations import get_result_paths
+except ImportError:
+    pass
 
 def print_images(input_images, result_paths, similarities, best_n):
     """
     Plots input images and their most similar results.
+
+    Args:
+        input_images (pd.DataFrame): DataFrame containing the input images' paths and related information.
+        result_paths (list): List of file paths for the most similar images.
+        similarities (list): List of similarity scores or IDs corresponding to the similar images.
+        best_n (int): Number of top similar images to display.
+
+    Returns:
+        None
     """
     input_images_number = len(input_images)
     max_images = max(input_images_number, best_n)
@@ -34,6 +52,12 @@ def print_images(input_images, result_paths, similarities, best_n):
 def plot_selected_images(id_list):
     """
     Plots images based on a list of IDs.
+
+    Args:
+        id_list (list): List of image IDs to be plotted.
+
+    Returns:
+        None
     """
     conn = sqlite3.connect("database/bd_database.db")
     curs = conn.cursor()
@@ -50,7 +74,16 @@ def plot_selected_images(id_list):
 def plot_dimensionality_reduction(algorithm_data, labels=None, output_file=None):
     """
     Plots the result of dimensionality reduction in 2D or 3D.
+
+    Args:
+        algorithm_data (np.ndarray): Array containing the reduced dimensionality data (2D or 3D).
+        labels (np.ndarray, optional): Array of labels to color the data points. Defaults to None.
+        output_file (str, optional): Path to save the plot as an HTML file. Defaults to None.
+
+    Returns:
+        None
     """
+
     if labels is None:
         labels = np.array([""] * len(algorithm_data))
     num_dims = algorithm_data.shape[1]

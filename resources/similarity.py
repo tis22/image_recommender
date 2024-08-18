@@ -1,18 +1,26 @@
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
-from .data_processing import load_pickles
 import pickle
-from .image_features import extract_image_details, load_embedding_model
-from .database_operations import get_result_paths
-from .visualization import print_images
 import sqlite3
 
-global rgb_df, hsv_df, embedding_df, path_df, other_data_df
+try:
+    from image_features import extract_image_details, load_embedding_model
+    from database_operations import get_result_paths
+    from visualization import print_images
+    from data_processing import load_pickles
+except ModuleNotFoundError:
+    pass
+
+try:
+    from .image_features import extract_image_details, load_embedding_model
+    from .database_operations import get_result_paths
+    from .visualization import print_images
+    from .data_processing import load_pickles
+except ImportError:
+    pass
 
 
-# Load pickles
-#rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 
 
 def calculate_mean_similarity(df_input_measurements, df_comparison_data, similarity_function, best_n):
@@ -53,6 +61,20 @@ def calculate_mean_similarity(df_input_measurements, df_comparison_data, similar
     return best_ids
 
 def find_similar_ids(measurement, similarity, df_input, best_n):
+    """
+    Finds the IDs of images that are most similar to the input image.
+
+    Args:
+        measurement (str): Type of measurement to use ('RGB', 'HSV', or 'Embedding').
+        similarity (str): Similarity metric to use ('euclidean', 'manhattan', 'cosine').
+        df_input (pd.DataFrame): DataFrame containing features of the input image(s).
+        best_n (int): Number of top similar images to return.
+
+    Returns:
+        list: List of IDs for the most similar images.
+    """
+    rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
+    
     similarity_functions = {"euclidean": "euclidean", "manhattan": "cityblock", "cosine": "cosine"}
 
     histogram_columns = {"RGB": "RGB_Histogram", "HSV": "HSV_Histogram", "Embedding": "Model_Embedding"}
@@ -74,6 +96,18 @@ def find_similar_ids(measurement, similarity, df_input, best_n):
 
 # Required because removing entries with 'none' (during extraction) sometimes causes IDs to be missing
 def correct_data():
+
+    """
+    Corrects mismatched IDs in the dataframes and saves the corrected data.
+
+    This function ensures that the IDs in the dataframes are sequential and consistent.
+    It checks for mismatches and corrects them, then saves the corrected data back to 
+    the pickle files.
+
+    Returns:
+        None
+    """
+        
     rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 
     dataframes = [
@@ -100,11 +134,6 @@ def correct_data():
                 if corrected:
                     print(f"Corrected: {filename}")
 
-                    # Save only if corrections were made
-                    with open(filename, "wb") as f:
-                        pickle.dump(df, f)
-                    print(f"Overwritten: {filename}\n")
-                    first_mismatch_found = True
                 else:
                     print(f"No mismatch: {filename}")
 
@@ -120,7 +149,21 @@ def correct_data():
             break
 
 def main_finding_similarities(input_images_number, measurement, similarity, best_n):
-    global rgb_df, hsv_df, embedding_df, path_df, other_data_df
+
+    """
+    Main function to find and display the most similar images based on input criteria.
+
+    Args:
+        input_images_number (int): Number of input images to consider.
+        measurement (str): Type of measurement to use ('RGB', 'HSV', or 'Embedding').
+        similarity (str): Similarity metric to use ('euclidean', 'manhattan', 'cosine').
+        best_n (int): Number of top similar images to return.
+
+    Returns:
+        None
+    """
+
+    rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
 
     # Load pickles (doing this outside is better for perform the main more than one time)
     # rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()

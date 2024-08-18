@@ -2,11 +2,31 @@ import os
 import pickle
 import pandas as pd
 from tqdm.notebook import tqdm
-from .image_features import extract_image_details, load_embedding_model
+
+try:
+    from image_features import extract_image_details, load_embedding_model
+except ModuleNotFoundError:
+    pass
+
+try:
+    from .image_features import extract_image_details, load_embedding_model
+except ImportError:
+    pass
+
+
+PATH_TO_IMAGES = r"C:\Users\timsa\Desktop\Daten_Joschua\data\image_data\extra_collection\city"
+
 
 def find_image_files(root_dir, extensions=(".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
     """
     Recursively finds all image files in the specified directory with the given extensions.
+
+    Args:
+        root_dir (str): The root directory to search for image files.
+        extensions (tuple): A tuple of file extensions to include in the search.
+
+    Returns:
+        list: A list of paths to image files that match the specified extensions.
     """
     image_files = []
     for subdir, dirs, files in os.walk(root_dir):
@@ -18,6 +38,15 @@ def find_image_files(root_dir, extensions=(".jpg", ".jpeg", ".png", ".bmp", ".ti
 def load_checkpoint():
     """
     Loads the checkpoint from a pickle file, if it exists.
+
+    Returns:
+        tuple: A tuple containing the following elements:
+            - batch_index (int): The index of the last processed batch.
+            - paths (list): A list of image paths.
+            - rgb_hists (list): A list of RGB histograms.
+            - hsv_hists (list): A list of HSV histograms.
+            - embeddings (list): A list of model embeddings.
+            - other_data (list): A list of other data associated with the images.
     """
     if not os.path.exists("checkpoint.pkl"):
         return 0, [], [], [], [], []
@@ -30,6 +59,17 @@ def load_checkpoint():
 def save_checkpoint(batch_index, paths, rgb_hists, hsv_hists, embeddings, other_data):
     """
     Saves the current progress into a checkpoint pickle file.
+
+    Args:
+        batch_index (int): The index of the current batch being processed.
+        paths (list): A list of image paths.
+        rgb_hists (list): A list of RGB histograms.
+        hsv_hists (list): A list of HSV histograms.
+        embeddings (list): A list of model embeddings.
+        other_data (list): A list of other data associated with the images.
+
+    Returns:
+        None
     """
     with open("checkpoint.pkl", "wb") as f:
         pickle.dump((batch_index, paths, rgb_hists, hsv_hists, embeddings, other_data), f)
@@ -37,6 +77,14 @@ def save_checkpoint(batch_index, paths, rgb_hists, hsv_hists, embeddings, other_
 def load_pickles():
     """
     Loads the saved data from pickle files.
+
+    Returns:
+        tuple: A tuple containing the following pandas DataFrames:
+            - rgb_df (pd.DataFrame): DataFrame containing RGB histograms.
+            - hsv_df (pd.DataFrame): DataFrame containing HSV histograms.
+            - embedding_df (pd.DataFrame): DataFrame containing model embeddings.
+            - path_df (pd.DataFrame): DataFrame containing image paths.
+            - other_data_df (pd.DataFrame): DataFrame containing other image data.
     """
     rgb_df = pd.read_pickle("RGB_Hist.pkl")
     hsv_df = pd.read_pickle("HSV_Hist.pkl")
@@ -49,6 +97,18 @@ def load_pickles():
 def image_batch_generator(image_files, batch_size, resize_size, start_index=0, show_progress=True):
     """
     Generates batches of image data for processing.
+
+    Args:
+        image_files (list): A list of image file paths to be processed.
+        batch_size (int): The number of images to process in each batch.
+        resize_size (tuple): The desired size to which each image should be resized.
+        start_index (int, optional): The index from which to start processing images. Defaults to 0.
+        show_progress (bool, optional): Whether to display a progress bar. Defaults to True.
+
+    Yields:
+        tuple: A tuple containing the following elements:
+            - df (pd.DataFrame): A DataFrame containing extracted features for the current batch of images.
+            - batch_index (int): The index of the next batch to be processed.
     """
     total_batches = (len(image_files) - start_index + batch_size - 1) // batch_size
     progress_bar = tqdm(total=total_batches, desc="Processing images") if show_progress else None
@@ -76,10 +136,17 @@ def image_batch_generator(image_files, batch_size, resize_size, start_index=0, s
 def main_load_images(batch_size, desired_size):
     """
     Main function to load images, calculate features, and save them.
+
+    Args:
+        batch_size (int): The number of images to process in each batch.
+        desired_size (tuple): The desired size to which each image should be resized.
+
+    Returns:
+        None
     """
     start_index, paths, rgb_hists, hsv_hists, embeddings, other_data = load_checkpoint()
 
-    image_paths = find_image_files(r"C:\Users\timsa\Desktop\Daten_Joschua\data\image_data\extra_collection\city")
+    image_paths = find_image_files(PATH_TO_IMAGES)  
     load_embedding_model()
 
     for df, batch_index in image_batch_generator(
