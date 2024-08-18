@@ -67,11 +67,12 @@ To find a specified number of similar images based on your chosen feature type a
 
 ```python
 main_finding_similarities(1, "RGB", "euclidean", 5)
+```
 This function will compute the similarities between your input images and the dataset, displaying the top n similar images. 
 You can specify the number of input images, choose between 'RGB', 'HSV' or 'Embedding' as the feature type
 and select 'euclidean', 'manhattan' or 'cosine' as the distance metric.
 Important: You need to specify the paths to your input images before running the function.
-```
+
 
 ### Correct Data Inconsistencies
 If you encounter any inconsistencies in the data, you can correct them by running:
