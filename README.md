@@ -59,7 +59,7 @@ This script will process the images from your specified directory, calculate the
 Load the Pickled Data
 Make sure your data is properly loaded from the pickle files:
 ```python
-rgb_df, hsv_df, embedding_df, path_df, other_data_df = load_pickles()
+initialize_data()
 ```
 
 ### Find Similar Images
